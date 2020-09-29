@@ -11,8 +11,6 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.stream.StreamSupport;
 
-import static java.lang.StrictMath.E;
-
 public class CensusAnalyser {
 
 
@@ -20,9 +18,7 @@ public class CensusAnalyser {
         try ( Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
 
             Iterator<IndiaCensusCSV>  censusCSVIterator = this.getCSVFileIterator(reader,IndiaCensusCSV.class);
-            Iterable<IndiaCensusCSV> csvIterable = () -> censusCSVIterator;
-            int entries = (int) StreamSupport.stream(csvIterable.spliterator(),false).count();
-            return entries;
+           return this.getCount(censusCSVIterator);
 
         } catch (IOException e) {
             throw new CensusAnalyserException(e.getMessage(),
@@ -34,9 +30,7 @@ public class CensusAnalyser {
         try ( Reader reader = Files.newBufferedReader(Paths.get(csvFilePath));) {
 
             Iterator<IndiaStateCodeCSV>  stateCSVIterator = this.getCSVFileIterator(reader,IndiaStateCodeCSV.class);
-            Iterable<IndiaStateCodeCSV> csvIterable = () -> stateCSVIterator;
-            int entries = (int) StreamSupport.stream(csvIterable.spliterator(),false).count();
-            return entries;
+            return getCount(stateCSVIterator);
 
         } catch (IOException e) {
             throw new CensusAnalyserException(e.getMessage(),
@@ -47,7 +41,12 @@ public class CensusAnalyser {
         }
 
     }
+    private <E> int getCount(Iterator<E> iterator){
+        Iterable<E> csvIterable = () -> iterator;
+        int entries = (int) StreamSupport.stream(csvIterable.spliterator(),false).count();
+        return entries;
 
+    }
     private <E> Iterator<E> getCSVFileIterator(Reader reader,
                                                Class<E> csvClass)  {
 
@@ -56,7 +55,6 @@ public class CensusAnalyser {
         csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
         CsvToBean<E> csvToBean = csvToBeanBuilder.build();
         return csvToBean.iterator();
-
 
     }
 }
