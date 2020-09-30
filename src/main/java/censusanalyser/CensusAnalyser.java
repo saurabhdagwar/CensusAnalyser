@@ -24,6 +24,10 @@ public class CensusAnalyser {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.RUNTIME_EXCEPTION);
         }
+        catch (CSVBuilderException e){
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        }
     }
 
     public int loadIndianStateCode(String csvFilePath) throws CensusAnalyserException {
@@ -37,6 +41,9 @@ public class CensusAnalyser {
         }catch (RuntimeException e) {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.RUNTIME_EXCEPTION);
+        } catch (CSVBuilderException e) {
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         }
 
     }
