@@ -6,8 +6,8 @@ public class CensusAnalyserException extends Exception {
         super(message);
         this.type = type;
     }
-    enum ExceptionType {
-        CENSUS_FILE_PROBLEM,UNABLE_TO_PARSE,INCORRECT_FILE_TYPE,RUNTIME_EXCEPTION
+    public enum ExceptionType {
+        CENSUS_FILE_PROBLEM,UNABLE_TO_PARSE,INCORRECT_FILE_TYPE,RUNTIME_EXCEPTION,NO_CENSUS_DATA
     }
 
     ExceptionType type;
