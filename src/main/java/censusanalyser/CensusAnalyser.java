@@ -45,13 +45,10 @@ public class CensusAnalyser {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         }
-
     }
     private <E> int getCount(Iterator<E> iterator) {
         Iterable<E> csvIterable = () -> iterator;
         int entries = (int) StreamSupport.stream(csvIterable.spliterator(), false).count();
         return entries;
     }
-
-
 }
