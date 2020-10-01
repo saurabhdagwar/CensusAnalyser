@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="CensusAnalyzerJar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../CensusAnalyzerJar/out/artifacts/CensusAnalyzerJar_jar/CensusAnalyzerJar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
