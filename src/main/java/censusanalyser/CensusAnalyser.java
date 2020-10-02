@@ -79,7 +79,6 @@ public class CensusAnalyser {
         this.sortCensusData(censusComparator);
         String sortedStatedCensusJson = new Gson().toJson(this.censusList);
         return sortedStatedCensusJson;
-
     }
 
     public String getStatePopulationSort() throws CensusAnalyserException {
@@ -170,5 +169,4 @@ public class CensusAnalyser {
         } catch (IOException e) { }
         return sortedStatedCensusJson;
     }
-
 }
