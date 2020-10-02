@@ -5,6 +5,7 @@ import com.csvbuilder.ICSVBuilder;
 import com.google.gson.Gson;
 
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -16,12 +17,13 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class CensusAnalyser {
+    private static final String CENSUS_JSON_FILE = "./src/test/resources/IndiaStateCensusData.json";
     List<IndiaCensusDAO> censusList = null;
     List<IndianStateDAO> stateList = null ;
 
     public CensusAnalyser(){
         this.censusList = new ArrayList<IndiaCensusDAO>();
-         this.stateList = new ArrayList<>();
+        this.stateList = new ArrayList<IndianStateDAO>();
     }
 
 
@@ -63,7 +65,6 @@ public class CensusAnalyser {
             throw new CensusAnalyserException(e.getMessage(),
                     CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
         }
-
     }
 
     private <E> int getCount(Iterator<E> iterator) {
@@ -132,5 +133,24 @@ public class CensusAnalyser {
             }
         }
     }
-}
 
+    public String getCensusDensitySort() throws CensusAnalyserException {
+        if(censusList == null || censusList.size() ==0){
+            throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
+        }
+        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.densityPerSqKm);
+        this.sortCensusData(censusComparator);
+        String sortedStatedCensusJson = new Gson().toJson(this.censusList);
+        writeCensusJsonFile(sortedStatedCensusJson,CENSUS_JSON_FILE);
+        return sortedStatedCensusJson;
+    }
+
+    private void writeCensusJsonFile(String jsonString, String jsonPath) {
+        try(FileWriter fileWriter = new FileWriter(jsonPath)){
+            fileWriter.write(jsonString);
+        } catch (IOException e) {
+
+        }
+
+    }
+}
