@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="censusanalyser.CensusAnalyserTest" tests="1" skipped="1" failures="0" errors="0" timestamp="2020-10-02T17:43:20" hostname="DESKTOP-JVE4C36" time="4.722">
+<testsuite name="censusanalyser.CensusAnalyserTest" tests="1" skipped="1" failures="0" errors="0" timestamp="2020-10-04T13:22:23" hostname="DESKTOP-JVE4C36" time="297.051">
   <properties/>
-  <testcase name="givingIndianStateCSV_ShouldReturnExactCount" classname="censusanalyser.CensusAnalyserTest" time="4.722">
+  <testcase name="givingIndianStateData_WhenSortOnStateCode_ShouldReturnSortedResult" classname="censusanalyser.CensusAnalyserTest" time="297.051">
     <skipped/>
   </testcase>
   <system-out><![CDATA[]]></system-out>
