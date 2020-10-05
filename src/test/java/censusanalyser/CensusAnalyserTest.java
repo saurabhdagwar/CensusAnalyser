@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 public class CensusAnalyserTest {
     private static final String INDIA_CENSUS_CSV_FILE_PATH = "./src/test/resources/IndiaStateCensusData.csv";
     private static final String INDIAN_STATE_CSV_FILE_PATH = "./src/test/resources/IndiaStateCode.csv";
+    private static final String US_CENSUS_CSV_FILE_PATH = "./src/test/resources/USCensusData.csv";
 
     @Test
     public void givenIndianCensusCSVFile_ReturnsCorrectRecords() {
@@ -191,5 +192,15 @@ public class CensusAnalyserTest {
             Assert.assertEquals(342239, censusCSVS[0].areaInSqKm);
         } catch (CensusAnalyserException e) {
         }
+    }
+    @Test
+    public void givingUSCensusData_ShouldReturnCorrectRecords(){
+        try {
+            CensusAnalyser censusAnalyser = new CensusAnalyser();
+            int CensusDataCount = censusAnalyser.loadUSCensusData(US_CENSUS_CSV_FILE_PATH);
+            Assert.assertEquals(51, CensusDataCount);
+        }catch (CensusAnalyserException e) {
+        }
+
     }
 }

@@ -13,14 +13,16 @@ import java.util.stream.StreamSupport;
 
 public class CensusAnalyser {
     private static final String CENSUS_JSON_FILE = "./src/test/resources/IndiaStateCensusData.json";
-    List<IndiaCensusDAO> censusList = null;
+    List<CensusDAO> censusList = null;
     List<IndianStateDAO> stateList = null ;
     Map<String, IndianStateDAO> stateMap = null ;
+    Map<String, CensusDAO> usCensusMap = null ;
 
     public CensusAnalyser(){
         this.censusList = new ArrayList<>();
         this.stateList = new ArrayList<>();
         this.stateMap = new HashMap<>();
+        this.usCensusMap = new HashMap<>();
     }
 
     public int loadIndiaCensusData(String csvFilePath) throws CensusAnalyserException {
@@ -28,7 +30,7 @@ public class CensusAnalyser {
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
             Iterator<IndiaCensusCSV> csvFileIterator = csvBuilder.getCSVFileIterator(reader, IndiaCensusCSV.class);
             while(csvFileIterator.hasNext()){
-                this.censusList.add( new IndiaCensusDAO(csvFileIterator.next()));
+                this.censusList.add( new CensusDAO(csvFileIterator.next()));
             }
             return this.censusList.size();
         } catch (IOException e) {
@@ -66,6 +68,28 @@ public class CensusAnalyser {
         }
     }
 
+    public int loadUSCensusData(String csvFilePath) throws CensusAnalyserException {
+        ICSVBuilder csvBuilder = CSVBuilderFactory.createCSVBuilder();
+        try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
+            Iterator<USCensusCSV> csvFileIterator = csvBuilder.getCSVFileIterator(reader, USCensusCSV.class);
+            Iterable<USCensusCSV> csvIterable = () -> csvFileIterator;
+
+            StreamSupport.stream(csvIterable.spliterator(), false)
+                    .forEach(censusCSV -> usCensusMap.put(censusCSV.state ,new CensusDAO(censusCSV)));
+            return this.usCensusMap.size();
+
+        } catch (IOException e) {
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        } catch (RuntimeException e) {
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.RUNTIME_EXCEPTION);
+        } catch (CSVBuilderException e) {
+            throw new CensusAnalyserException(e.getMessage(),
+                    CensusAnalyserException.ExceptionType.CENSUS_FILE_PROBLEM);
+        }
+    }
+
     private <E> int getCount(Iterator<E> iterator) {
         Iterable<E> csvIterable = () -> iterator;
         int entries = (int) StreamSupport.stream(csvIterable.spliterator(), false).count();
@@ -77,7 +101,7 @@ public class CensusAnalyser {
         if(censusList == null || censusList.size() ==0){
             throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
         }
-        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.state);
+        Comparator<CensusDAO> censusComparator = Comparator.comparing(census -> census.state);
         this.sortCensusData(censusComparator);
         String sortedStatedCensusJson = new Gson().toJson(this.censusList);
         return sortedStatedCensusJson;
@@ -87,7 +111,7 @@ public class CensusAnalyser {
         if(censusList == null || censusList.size() ==0){
             throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
         }
-        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.population);
+        Comparator<CensusDAO> censusComparator = Comparator.comparing(census -> census.population);
         this.sortCensusData(censusComparator);
         String sortedStatedCensusJson = new Gson().toJson(this.censusList);
         return sortedStatedCensusJson;
@@ -97,7 +121,7 @@ public class CensusAnalyser {
         if(censusList == null || censusList.size() ==0){
             throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
         }
-        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.densityPerSqKm);
+        Comparator<CensusDAO> censusComparator = Comparator.comparing(census -> census.populationDensity);
         this.sortCensusData(censusComparator);
         String sortedStatedCensusJson = new Gson().toJson(this.censusList);
         try(FileWriter fileWriter = new FileWriter(CENSUS_JSON_FILE)){
@@ -110,7 +134,7 @@ public class CensusAnalyser {
         if(censusList == null || censusList.size() ==0){
             throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
         }
-        Comparator<IndiaCensusDAO> censusComparator = Comparator.comparing(census -> census.areaInSqKm,Comparator.reverseOrder());
+        Comparator<CensusDAO> censusComparator = Comparator.comparing(census -> census.totalArea,Comparator.reverseOrder());
         this.sortCensusData(censusComparator);
         String sortedStatedCensusJson = new Gson().toJson(this.censusList);
         try(FileWriter fileWriter = new FileWriter(CENSUS_JSON_FILE)){
@@ -119,12 +143,12 @@ public class CensusAnalyser {
         return sortedStatedCensusJson;
     }
     //bubble sort for sorting IndianCensusDAO
-    private void sortCensusData( Comparator<IndiaCensusDAO> csvComparator) {
+    private void sortCensusData( Comparator<CensusDAO> csvComparator) {
         for (int i=0 ; i<censusList.size()-1;i++)
         {
             for (int j=0 ; j<censusList.size()-i-1;j++){
-                IndiaCensusDAO census1=censusList.get(j);
-                IndiaCensusDAO census2=censusList.get(j+1);
+                CensusDAO census1=censusList.get(j);
+                CensusDAO census2=censusList.get(j+1);
                 if(csvComparator.compare(census1,census2) > 0)
                 {
                     censusList.set(j,census2);
@@ -159,5 +183,7 @@ public class CensusAnalyser {
             }
         }
     }
+
+
 
 }
